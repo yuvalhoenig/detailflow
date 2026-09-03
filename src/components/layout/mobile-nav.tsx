@@ -3,11 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X, Sparkles, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS } from "./nav-items";
 
-export function MobileNav() {
+export function MobileNav({ isAdmin }: { isAdmin?: boolean }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -74,6 +74,24 @@ export function MobileNav() {
                 );
               })}
             </nav>
+
+            {isAdmin && (
+              <div className="px-3 pb-4">
+                <Link
+                  href="/admin"
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                    pathname?.startsWith("/admin")
+                      ? "bg-sidebar-active text-white"
+                      : "text-sidebar-foreground hover:bg-sidebar-active/60 hover:text-white",
+                  )}
+                >
+                  <ShieldCheck className="h-4 w-4" />
+                  Admin
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}

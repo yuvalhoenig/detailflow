@@ -424,8 +424,21 @@ export interface Database {
           current_period_end?: string | null;
         }
       >;
+      platform_admins: Table<
+        { id: string; created_at: string },
+        { id: string }
+      >;
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      is_platform_admin: {
+        Args: Record<string, never>;
+        Returns: boolean;
+      };
+      auth_business_id: {
+        Args: Record<string, never>;
+        Returns: string;
+      };
+    };
   };
 }

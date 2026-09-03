@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sparkles } from "lucide-react";
+import { Sparkles, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS } from "./nav-items";
 
-export function Sidebar() {
+export function Sidebar({ isAdmin }: { isAdmin?: boolean }) {
   const pathname = usePathname();
 
   return (
@@ -42,6 +42,23 @@ export function Sidebar() {
           );
         })}
       </nav>
+
+      {isAdmin && (
+        <div className="px-3 pb-2">
+          <Link
+            href="/admin"
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+              pathname?.startsWith("/admin")
+                ? "bg-sidebar-active text-white"
+                : "text-sidebar-foreground hover:bg-sidebar-active/60 hover:text-white",
+            )}
+          >
+            <ShieldCheck className="h-4 w-4" />
+            Admin
+          </Link>
+        </div>
+      )}
 
       <div className="mx-3 mb-4 rounded-xl bg-sidebar-active/60 p-4">
         <p className="text-sm font-medium text-white">Upgrade to Pro</p>
