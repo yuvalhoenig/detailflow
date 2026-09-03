@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { Building2, Users, CreditCard } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { BusinessesTable, type AdminBusinessRow } from "@/components/admin/businesses-table";
 
 export default async function AdminPage() {
   const supabase = await createClient();
@@ -26,12 +28,30 @@ export default async function AdminPage() {
   );
   const proCount = (subscriptions ?? []).filter((s) => s.plan === "pro").length;
 
+  const businessRows: AdminBusinessRow[] = (businesses ?? []).map((b) => ({
+    id: b.id,
+    name: b.name,
+    ownerEmail: emailByOwnerId.get(b.owner_id) ?? "—",
+    plan: (planByBusiness.get(b.id) as "free" | "pro" | undefined) ?? "free",
+    createdAt: b.created_at,
+  }));
+
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-foreground">Platform Admin</h1>
-      <p className="mt-1 text-sm text-muted">
-        Manage every business on DetailFlow
-      </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground">Platform Admin</h1>
+          <p className="mt-1 text-sm text-muted">
+            Manage every business on DetailFlow
+          </p>
+        </div>
+        <Link
+          href="/admin/users"
+          className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-background"
+        >
+          Manage Users
+        </Link>
+      </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard label="Businesses" value={String(businesses?.length ?? 0)} icon={Building2} />
@@ -44,41 +64,8 @@ export default async function AdminPage() {
         <StatCard label="Pro Subscriptions" value={String(proCount)} icon={CreditCard} />
       </div>
 
-      <div className="mt-6 overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
-              <th className="px-4 py-3 font-medium">Business</th>
-              <th className="px-4 py-3 font-medium">Owner</th>
-              <th className="px-4 py-3 font-medium">Plan</th>
-              <th className="px-4 py-3 font-medium">Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(businesses ?? []).length === 0 ? (
-              <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-muted">
-                  No businesses yet.
-                </td>
-              </tr>
-            ) : (
-              (businesses ?? []).map((b) => (
-                <tr key={b.id} className="border-b border-border last:border-0">
-                  <td className="px-4 py-3 font-medium text-foreground">{b.name}</td>
-                  <td className="px-4 py-3 text-muted">
-                    {emailByOwnerId.get(b.owner_id) ?? "—"}
-                  </td>
-                  <td className="px-4 py-3 capitalize text-muted">
-                    {planByBusiness.get(b.id) ?? "free"}
-                  </td>
-                  <td className="px-4 py-3 text-muted">
-                    {new Date(b.created_at).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+      <div className="mt-6">
+        <BusinessesTable businesses={businessRows} />
       </div>
     </div>
   );
